@@ -58995,7 +58995,15 @@ function productNameFormatter(cell, row) {
 }
 
 function qtyFormatter(cell, row) {
-  return cell + '<i class=\'glyphicon glyphicon-edit\' style=\'float:right;cursor:pointer\'></i>';
+  var color = '';
+  if (cell < 10) {
+    color = 'red';
+  } else if (cell > 10 && cell < 30) {
+    color = '#ffa500';
+  } else {
+    color = 'green';
+  }
+  return '<div style=\'background-color:' + color + ';color:white\'>' + cell + '<i class=\'glyphicon glyphicon-edit\' style=\'float:right;cursor:pointer\'></i></div>';
 }
 
 function expiryDateFormatter(cell, row) {

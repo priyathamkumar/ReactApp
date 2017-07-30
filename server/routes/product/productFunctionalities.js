@@ -205,20 +205,20 @@ exports.updateProduct = function(req, callback) {
                                     }
                                     logger.error(TAG + "Mongo error in updating a product doc, error :" + JSON.stringify(error));
                                     return callback(true, resJson);
-                                } else if(!error && resultc.result.nModified >= 0) {
+                                } else if(!error && resultc.result.nModified > 0) {
                                     var resJson = {
                                         "http_code": "200",
                                         "message": "Product updated successfully."
                                     }
                                     logger.info(TAG + " Product updated successfully.");
                                     return callback(false, resJson);
-                                // } else if(!error && resultc.result.nModified == 0 && resultc.result.n > 0){
-                                //     resJson = {
-                                //         "http_code" : "400",
-                                //         "message" : "No changes are made to update Product Details."
-                                //     };
-                                //     logger.error(TAG + " No changes are made to update Product Details.");
-                                //     return callback(true, resJson);
+                                } else if(!error && resultc.result.nModified == 0 && resultc.result.n > 0){
+                                    resJson = {
+                                        "http_code" : "400",
+                                        "message" : "No changes are made to update Product Details."
+                                    };
+                                    logger.error(TAG + " No changes are made to update Product Details.");
+                                    return callback(true, resJson);
                                 } else if(!error && resultc.result.n == 0){
                                     resJson = {
                                         "http_code" : "400",
@@ -295,11 +295,20 @@ exports.fetchProducts = function(req, callback) {
                 var finalResult = result;
                 var products = [];
                 finalResult.forEach(function(entry){
+                    var qtyColor = '';
+                    if(entry.productEntity.qty < 10){
+                        qtyColor = 'red';
+                    } else if(entry.productEntity.qty >= 10 && entry.productEntity.qty < 30){
+                        qtyColor = '#ffa500';
+                    } else {
+                        qtyColor = 'green';
+                    }
                     products.push({
                         "productId": entry.productEntity.productId,
                         "name": entry.productEntity.name,
                         "code": entry.productEntity.code,
                         "qty": entry.productEntity.qty,
+                        "qtyColor": qtyColor,
                         "expiryDate": (new Date(entry.productEntity.expiryDate).getFullYear()) +'-'+ ('0' + (new Date(entry.productEntity.expiryDate).getMonth() + 1)).slice(-2) +'-'+ ('0' + new Date(entry.productEntity.expiryDate).getDate()).slice(-2),
                         "createdDate": (new Date(entry.productEntity.createdDate).getFullYear()) +'-'+ ('0' + (new Date(entry.productEntity.createdDate).getMonth() + 1)).slice(-2) +'-'+ ('0' + new Date(entry.productEntity.createdDate).getDate()).slice(-2)                                              
                     });
